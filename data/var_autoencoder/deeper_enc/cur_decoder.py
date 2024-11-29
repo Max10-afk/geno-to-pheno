@@ -1,4 +1,4 @@
-fc_reg = keras.regularizers.L2(1e-5)
+fc_reg = keras.regularizers.L2(1e-1)
 @keras.saving.register_keras_serializable()
 class decoder(Model):
     def __init__(self, latent_dim, depth = 1,**kwargs):
@@ -15,7 +15,7 @@ class decoder(Model):
                 block.append(layers.Dense(units=50 * i, kernel_regularizer = fc_reg))
                 layers.BatchNormalization(center = False)
                 block.append(layers.LeakyReLU(negative_slope=0.5))
-            block.append(layers.Dense(units=1144))
+            block.append(layers.Dense(units=1144, kernel_regularizer = fc_reg))
             block.append(layers.LeakyReLU(negative_slope=0.5))
             self.blocks.append(block)
 

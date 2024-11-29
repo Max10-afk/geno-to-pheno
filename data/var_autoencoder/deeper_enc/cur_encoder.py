@@ -1,10 +1,11 @@
-fc_reg = keras.regularizers.L2(1e-5)
+fc_reg = keras.regularizers.L2(1e-1)
 
 @keras.saving.register_keras_serializable()
 class encoder(Model):
     def __init__(self, latent_dim, width = 1,**kwargs):
         super().__init__(**kwargs)
         self.latent_dim = latent_dim
+        self.drop = feature_drop_layer(0.3, feature_dim = 1)
         self.blocks = []
         for cur_block in range(width):
             self.blocks.append(
@@ -32,8 +33,8 @@ class encoder(Model):
                     layers.BatchNormalization(center = False),
                 ]
             )
-        self.mean_dense = layers.Dense(self.latent_dim, activation=None)
-        self.logvar_dense = layers.Dense(self.latent_dim, activation=None,
+        self.mean_dense = layers.Dense(self.latent_dim, activation=None, kernel_regularizer = fc_reg)
+        self.logvar_dense = layers.Dense(self.latent_dim, activation=None, kernel_regularizer = fc_reg,
                                          kernel_initializer=tf.keras.initializers.Zeros())
 
     def get_config(self):

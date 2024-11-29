@@ -109,7 +109,8 @@ class feature_drop_layer(tf.keras.layers.Layer):
 
 def train_and_get_results(model,train_dataset = train_dataset, test_dataset = test_dataset, epochs = 100,
                             base_dir = "./data/var_autoencoder/",
-                            files_to_backup = ["cur_helpers.py", "cur_encoder.py", "cur_decoder.py", "cur_autoencoder.py"]):
+                            files_to_backup = ["cur_helpers.py", "cur_encoder.py", "cur_decoder.py", "cur_autoencoder.py"],
+                            write_to_disk = True):
     model_name = cur_base_dir.split("/")[-2]
     if not os.path.isdir(base_dir):
         os.mkdir(base_dir)
@@ -136,9 +137,14 @@ def train_and_get_results(model,train_dataset = train_dataset, test_dataset = te
 
     model_train_loss = model.fit(train_dataset, epochs=epochs,
                                     validation_data = test_dataset)
-    model.save(base_dir + "model.keras")
+    
     train_hist_df = pd.DataFrame(model_train_loss.history)
     train_hist_df["loss"] = model
-    train_hist_df.to_csv(base_dir + "train_hist.csv")
+    
     fig, axes = plot_train_val_metrics(model_train_loss, suptitle = "Model Performance Metrics using cross entropy loss")
-    fig.savefig(base_dir + "train_hist.png")
+    
+    if write_to_disk:
+        model.save(base_dir + "model.keras")
+        train_hist_df.to_csv(base_dir + "train_hist.csv")
+        fig.savefig(base_dir + "train_hist.png")
+    return [model, train_hist_df, fig]
