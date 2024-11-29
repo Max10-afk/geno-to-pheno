@@ -2,3 +2,5 @@
 __pycache__/
 *.keras
 .Identifier
+.h5
+data/Philip_Master_data/
