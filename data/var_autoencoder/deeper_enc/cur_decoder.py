@@ -12,10 +12,10 @@ class decoder(Model):
             # Create a block of layers
             block = []
             for i in range(1, self.depth):
-                block.append(layers.Dense(units=50 * i, kernel_regularizer = fc_reg))
+                block.append(layers.Dense(units=50 * i)),#, kernel_regularizer = fc_reg))
                 layers.BatchNormalization(center = False)
                 block.append(layers.LeakyReLU(negative_slope=0.5))
-            block.append(layers.Dense(units=1144, kernel_regularizer = fc_reg))
+            block.append(layers.Dense(units=1144)),#, kernel_regularizer = fc_reg))
             block.append(layers.LeakyReLU(negative_slope=0.5))
             self.blocks.append(block)
 
@@ -36,7 +36,7 @@ class decoder(Model):
     def call(self, parents, embed_x, training = False):
 
         outputs = []
-        # embed_x = self.drop(embed_x, training = training)
+        embed_x = self.drop(embed_x, training = training)
         for block in self.blocks:
             sub_x = embed_x
             for layer in block:

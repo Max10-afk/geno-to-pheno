@@ -19,22 +19,22 @@ class encoder(Model):
                     #layers.Conv2D(filters = 1, kernel_size = (1, 1), data_format = "channels_first"),
                     #layers.Conv2D(filters = 1, kernel_size = (1, 1), data_format = "channels_first"),
                     layers.Flatten(),
-                    layers.Dense(units=latent_dim * 4, activation=None, kernel_regularizer=fc_reg), #, #),
+                    layers.Dense(units=latent_dim * 4, activation=None),#, kernel_regularizer=fc_reg), #, #),
                     layers.LeakyReLU(negative_slope=0.5),
                     layers.BatchNormalization(center = False),
-                    layers.Dense(units=latent_dim * 3, activation=None, kernel_regularizer=fc_reg), #, #),
+                    layers.Dense(units=latent_dim * 3, activation=None), #kernel_regularizer=fc_reg), #, #),
                     layers.LeakyReLU(negative_slope=0.5),
                     layers.BatchNormalization(center = False),
-                    layers.Dense(units=latent_dim * 2, activation=None, kernel_regularizer=fc_reg), #, #),
+                    layers.Dense(units=latent_dim * 2, activation=None), #kernel_regularizer=fc_reg), #, #),
                     layers.LeakyReLU(negative_slope=0.5),
                     layers.BatchNormalization(center = False),
-                    layers.Dense(units=latent_dim, activation=None, kernel_regularizer=fc_reg), #, #),
+                    layers.Dense(units=latent_dim, activation=None), #kernel_regularizer=fc_reg), #, #),
                     layers.LeakyReLU(negative_slope=0.5),
                     layers.BatchNormalization(center = False),
                 ]
             )
-        self.mean_dense = layers.Dense(self.latent_dim, activation=None, kernel_regularizer = fc_reg)
-        self.logvar_dense = layers.Dense(self.latent_dim, activation=None, kernel_regularizer = fc_reg,
+        self.mean_dense = layers.Dense(self.latent_dim, activation=None) #kernel_regularizer = fc_reg)
+        self.logvar_dense = layers.Dense(self.latent_dim, activation=None, #kernel_regularizer = fc_reg,
                                          kernel_initializer=tf.keras.initializers.Zeros())
 
     def get_config(self):
