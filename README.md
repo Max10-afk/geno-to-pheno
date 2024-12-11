@@ -23,3 +23,4 @@ Quick explainer for the fodler structure:
     * regression_vae.py: model stiching together encoder + decoder + geno_to_trait, additionally defines train/test_step
     * data/reg_vae/: Different reg VAE implementation backups (definitions, weights & data used for training)
 Other folders than those mentioned previously in /data/ mostly contain raw data files, actual data used for training are in the .csv files in /data.
+Note that .keras weight files are to large for github, therefore i cant upload them :(
