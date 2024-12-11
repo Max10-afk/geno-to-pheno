@@ -1,6 +1,6 @@
 ## Model functions/variables
 freqs = np.unique(child_geno_np_train, return_counts = True)[1]/sum(np.unique(child_geno_np_train, return_counts = True)[1])
-fc_reg = keras.regularizers.L2(1e-2)
+fc_reg = keras.regularizers.L2(1e-1)
 inf_w = 1
 freq_w = 8e-1
 rec_loss_fn = tf.keras.losses.CategoricalFocalCrossentropy(from_logits = False, axis = -1,
