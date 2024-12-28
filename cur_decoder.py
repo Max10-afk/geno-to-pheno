@@ -31,7 +31,7 @@ class decoder(Model):
     def from_config(cls, config):
         return cls(**config)
 
-        
+    
     def call(self, parents, embed_x, training = False):
 
         outputs = []

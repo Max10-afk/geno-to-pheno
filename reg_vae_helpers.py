@@ -3,10 +3,10 @@ freqs = np.unique(child_geno_np_train, return_counts = True)[1]/sum(np.unique(ch
 fc_reg = keras.regularizers.L2(1e-2)
 inf_w = 1
 freq_w = 8e-1
-rec_loss_fn = tf.keras.losses.CategoricalFocalCrossentropy(from_logits = False, axis = -1,
-           alpha = np.array([inf_w, freq_w, inf_w, inf_w, inf_w, freq_w, inf_w, inf_w, freq_w, inf_w, freq_w]),
-           label_smoothing = 0.2)
-# rec_loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits = False, axis = -1)
+# rec_loss_fn = tf.keras.losses.CategoricalFocalCrossentropy(from_logits = False, axis = -1,
+#            alpha = np.array([inf_w, freq_w, inf_w, inf_w, inf_w, freq_w, inf_w, inf_w, freq_w, inf_w, freq_w]),
+#            label_smoothing = 0.1)
+rec_loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits = False, axis = -1)
 reg_loss_fn = tf.keras.losses.MeanAbsolutePercentageError()
 # rec_loss_fn = tf.keras.losses.KLDivergence()
 
