@@ -33,6 +33,16 @@ class reg_vae(Model):
         })
         return config
 
+    def build(self, example_input):
+        geno_input, trait_input = example_input
+        geno_shape = tf.concat([
+            geno_input[0], tf.expand_dims(geno_input[1], 1)],
+            axis = 1).shape.as_list()
+        self.encoder.build(geno_shape)
+        # self.decoder.build()
+        # self.regressor.build()
+        # super().build(input_shape)
+
     @classmethod
     def from_config(cls, config):
         return cls(**config)
@@ -79,7 +89,7 @@ class reg_vae(Model):
         return {m.name: m.result() for m in self.metrics}
 
     @tf.function
-    def train_step(self, data, cur_epoch):
+    def train_step(self, data, cur_epoch, return_activations = False):
         training = True
         geno_x, trait_x = data
         child_trait = trait_x[1]
@@ -89,10 +99,13 @@ class reg_vae(Model):
 
         with tf.GradientTape(persistent = True) as grad_tape:
             c_geno_x = tf.concat([parents_genos, tf.expand_dims(child_genos, 1)], axis = 1)
-            mean, logvar = self.encoder(c_geno_x, training = training)
+            mean, logvar, enc_act = self.encoder(c_geno_x, training = training,
+                return_activations = return_activations)
             embed_x = self.sample_z(mean, logvar)
-            geno_logits = self.decoder(parents_genos, embed_x, training = training)
-            pheno_pred = self.regressor(parent_trait, embed_x, training = training)
+            geno_logits, dec_act = self.decoder(parents_genos, embed_x, training = training,
+                return_activations = return_activations)
+            pheno_pred, reg_act = self.regressor(parent_trait, embed_x, training = training,
+                return_activations = return_activations)
             elbo_reg_loss, elbo_rec_loss, kl_loss, kl_scale, reg_loss, rec_loss, trait_pred, trait_true  = self.loss_fn(child_genos, geno_logits, mean, logvar,
                 trait_pred = pheno_pred, trait_true = child_trait, epoch = cur_epoch)
         vae_grads = grad_tape.gradient(elbo_rec_loss, self.encoder.trainable_variables +\
@@ -103,6 +116,7 @@ class reg_vae(Model):
             self.regressor.trainable_variables)
         self.reg_vae_opt.apply_gradients(zip(trait_grads, self.encoder.trainable_variables +\
             self.regressor.trainable_variables))
+        all_activations = {"encoder": enc_act, "decoder": dec_act, "regressor": reg_act}
         # enc_grads = grad_tape.gradient(kl_loss * tf.cast(kl_scale, tf.float32) + reg_loss + rec_loss, self.encoder.trainable_variables +\
         #     self.decoder.trainable_variables + self.regressor.trainable_variables)
         # self.enc_opt.apply_gradients(zip(enc_grads, self.encoder.trainable_variables))
@@ -112,7 +126,8 @@ class reg_vae(Model):
         # self.reg_opt.apply_gradients(zip(reg_grads, self.regressor.trainable_variables))
         del grad_tape
         return self.update_trackers(elbo_rec_loss, elbo_reg_loss, rec_loss, kl_loss, kl_scale, reg_loss,
-                                    child_genos, geno_logits, cur_epoch, trait_pred, child_trait)
+                                    child_genos, geno_logits, cur_epoch, trait_pred, child_trait),\
+                all_activations
 
     @tf.function
     def test_step(self, data, cur_epoch):
@@ -125,10 +140,10 @@ class reg_vae(Model):
 
 
         geno_x = tf.concat([parents_genos, tf.expand_dims(child_genos, 1)], axis = 1)
-        mean, logvar = self.encoder(geno_x, training = training)
+        mean, logvar, _ = self.encoder(geno_x, training = training)
         embed_x = self.sample_z(mean, logvar)
-        geno_logits = self.decoder(parents_genos, embed_x, training = training)
-        pheno_pred = self.regressor(parent_trait, embed_x, training = training)
+        geno_logits, _ = self.decoder(parents_genos, embed_x, training = training)
+        pheno_pred, _ = self.regressor(parent_trait, embed_x, training = training)
         # def call(self, x_labels, x_logits, mean, logvar, trait_pred, trait_true, epoch = None, step_size = 50):
         elbo_reg_loss, elbo_rec_loss, kl_loss, kl_scale, reg_loss, rec_loss, trait_pred, trait_true  = self.loss_fn(child_genos, geno_logits, mean, logvar,
             trait_pred = pheno_pred, trait_true = child_trait, epoch = cur_epoch)
