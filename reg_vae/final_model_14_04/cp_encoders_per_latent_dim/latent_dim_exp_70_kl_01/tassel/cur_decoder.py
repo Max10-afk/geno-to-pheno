@@ -119,6 +119,6 @@ class decoder(Model):
           self.final_e_drop(geno_pred, training = training),
           training = training)
         if return_activations:
-            return pred, act_tracker, gate
+            return pred, act_tracker, None
         else:
-            return pred, {}, gate, geno_pred
+            return pred, {}, None, geno_pred

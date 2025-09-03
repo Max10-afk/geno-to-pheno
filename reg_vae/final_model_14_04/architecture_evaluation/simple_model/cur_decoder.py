@@ -119,6 +119,6 @@ class decoder(Model):
         # pred = parents_diff + geno_pred
         pred = geno_pred
         if return_activations:
-            return pred, act_tracker, gate
+            return pred, act_tracker, None
         else:
-            return pred, {}, gate, geno_pred
+            return pred, {}, None, geno_pred

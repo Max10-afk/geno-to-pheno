@@ -110,6 +110,6 @@ class decoder(Model):
         # pred = tf.cast(prod_parents, dtype = geno_pred.dtype) + geno_pred
         pred = parents_diff + geno_pred
         if return_activations:
-            return pred, act_tracker, gate
+            return pred, act_tracker, None
         else:
-            return pred, {}, gate, geno_pred
+            return pred, {}, None, geno_pred
