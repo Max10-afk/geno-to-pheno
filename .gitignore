@@ -1,6 +1,11 @@
 .vscode/
 __pycache__/
 *.keras
-.Identifier
-.h5
+*.Identifier
+*.h5
 data/Philip_Master_data/
+data/geno_to_trait/
+data/additional_genos/
+data/reg_vae/
+data/var_autoencoder/
+reg_vae/shap_value_adapt_tf22/
